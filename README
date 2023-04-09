@@ -1,24 +1,24 @@
-Как же это работает?
+How does it work?
 
-А вот как: создаются три правила в iptables на роутере
+And here's how: three rules are created in iptables on the router
 
-Пусть наш роутер имеет два адреса: 192.168.1.1 и 192.168.2.1
-Socks5-сервер имеет адрес 192.168.2.4
-Тогда правила для клиентов будут такие:
+Let our router have two addresses: 192.168.1.1 and 192.168.2.1
+Socks5 server has address 192.168.2.4
+Then the rules for clients will be:
 
 iptables -t raw -A PREROUTING -s xxx.xxx.xxx.xxx -p udp -j NFQUEUE --queue-num xx
 iptables -t raw -A PREROUTING -s 192.168.2.4 -d 192.168.2.1 -p udp -j NFQUEUE --queue-num xx
 iptables -t mangle -A POSTROUTING -s xxx.xxx.xxx.xxx -d 192.168.2.4 -p udp -j NFQUEUE --queue-num xx
 
-В результате все udp пакеты с указанных машин, удовлетворяющих маске адреса xxx.xxx.xxx.xxx будут пересылаться через SOCKS5-сервер по адресу назначения.
+As a result, all udp packets from the specified hosts that match the address mask xxx.xxx.xxx.xxx will be forwarded through the SOCKS5 server to the destination address.
 
-Естественно, таблица raw должна быть активизирована в настройках ядра... В других таблицах почему-то не работает.
+Naturally, the raw table must be activated in the kernel settings ... For some reason, it does not work in other tables.
 
-Запускается соксификатор следующей командой:
+The soxifier is launched with the following command:
 
-udps-static -q xx. Если необходимо запустить в режиме демона, но добавляется опция -D.
+udps-static -q xx. If it is necessary to run in daemon mode, but the -D option is added.
 
-Файл udps.conf размещается в каталоге /opt/udps/
+The udps.conf file is located in the /opt/udps/ directory
 
 
 requires:
@@ -26,3 +26,4 @@ kernel >= 2.6.14
 iptables >= 1.3.4
 libnetfilter_queue >= 0.0.10
 libconfig >= ?
+
